@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "sourceMap": true,
+        "target": "es5",
+        "moduleResolution": "node",
+        "noImplicitAny": true,
+        "allowJs": true,
+        "strict": true
+    },
+    "include": [
+        "src/**/*",
+        "examples/scripts/**/*"
+    ]
+}
