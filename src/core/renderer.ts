@@ -14,7 +14,7 @@ export class Renderer {
         }
 
         this.gl                     = <WebGLRenderingContext>gl;
-        this.camera                 = new Camera(gl);
+        this.camera                 = new Camera();
         this.backgroundColor        = new Float32Array(3);
         this.shaderAssetsContainer  = new Array<Array<Asset>>();
         this.shadersContainer       = new Array<Shader>();
@@ -40,13 +40,22 @@ export class Renderer {
         //this.gl.enable(this.gl.CULL_FACE);
         this.gl.enable(this.gl.DEPTH_TEST);
 
-        const viewProjectionMatrix  = this.camera.getViewProjectionMatrix();
+        const aspect                = this.gl.canvas.clientWidth / this.gl.canvas.clientHeight;
+        const zNear                 = 0.1;
+        const zFar                  = 100.0;
+        const fov                   = 90;
+        const cameraMatrix          = this.camera.getCameraMatrix();
+        const projectionMatrix      = mat4.create();
+        const viewMatrix            = mat4.create();
+
+        mat4.perspective(projectionMatrix, fov, aspect, zNear, zFar);
+        mat4.invert(viewMatrix, cameraMatrix);
 
         for(let i = 0; i < this.shadersContainer.length; i++) {
             const shader        = this.shadersContainer[i];
             const shaderAssets  = this.shaderAssetsContainer[i];
 
-            shader.execute(shaderAssets, viewProjectionMatrix);
+            shader.execute(shaderAssets, projectionMatrix, viewMatrix);
         }
     }
 

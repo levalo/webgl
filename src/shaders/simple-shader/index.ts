@@ -30,10 +30,11 @@ export class SimpleShader extends Shader {
         this.vertexPositionLocation = this.gl.getAttribLocation(this.program, 'aVertexPosition');
         this.vertexColorLocation    = this.gl.getAttribLocation(this.program, 'aVertexColor');
         this.projectionLocation     = <WebGLUniformLocation>this.gl.getUniformLocation(this.program, 'uProjectionMatrix');
+        this.viewLocation           = <WebGLUniformLocation>this.gl.getUniformLocation(this.program, 'uViewMatrix');
         this.modelViewLocation      = <WebGLUniformLocation>this.gl.getUniformLocation(this.program, 'uModelViewMatrix');
     }
     
-    public execute(assets: Array<Asset>, projectionMatrix: mat4): void {
+    public execute(assets: Array<Asset>, projectionMatrix: mat4, viewMatrix: mat4): void {
         const vertexComponents  = 3;
         const type              = this.gl.FLOAT;
         const normalize         = false;
@@ -72,6 +73,7 @@ export class SimpleShader extends Shader {
             this.gl.vertexAttribPointer(this.vertexColorLocation, colorComponents, type, normalize, stride, offset);
 
             this.gl.uniformMatrix4fv(this.projectionLocation, false, projectionMatrix);
+            this.gl.uniformMatrix4fv(this.viewLocation, false, viewMatrix);
             this.gl.uniformMatrix4fv(this.modelViewLocation, false, modelViewMatrix);
 
             this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, asset.positionLength / vertexComponents);
@@ -93,6 +95,7 @@ export class SimpleShader extends Shader {
     private vertexColorLocation: number;
     private vertexPositionLocation: number;
     private projectionLocation: WebGLUniformLocation;
+    private viewLocation: WebGLUniformLocation;
     private modelViewLocation: WebGLUniformLocation;
 
     private fShader: WebGLShader;

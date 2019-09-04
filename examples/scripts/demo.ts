@@ -5,11 +5,12 @@ const canvas = <HTMLCanvasElement>document.getElementById("canvas");
 canvas.width = document.documentElement.clientWidth;
 canvas.height = document.documentElement.clientHeight - 3;
 
-const renderer      = new Renderer(canvas);
-const simpleShader  = new SimpleShader(renderer);
-const shaderIndex   = renderer.registrShader(simpleShader);
-const camera        = renderer.getCamera();
-const cameraState   = camera.getState();
+const renderer          = new Renderer(canvas);
+const simpleShader      = new SimpleShader(renderer);
+const shaderIndex       = renderer.registrShader(simpleShader);
+const camera            = renderer.getCamera();
+const cameraPosition    = camera.getPosition();
+const cameraRotation    = camera.getRotation();
 
 const cubePositions = new Float32Array([
     -1.0, 1.0, 1.0,     1.0, 1.0, 1.0,
@@ -85,21 +86,21 @@ for(let i = -100; i < 100; i += 7) {
 
 renderer.setBackgroundColor(new Float32Array([0.9, 0.9, 0.9]));
 
-cameraState.position[2] = 5;
+cameraPosition[2] = 5;
 camera.update();
 
 document.onkeydown = (event: KeyboardEvent): void => {
     if (event.which == 39) {
-        cameraState.rotation[1] += 1.5;
+        cameraRotation[1] += 1.5;
     }
     else if (event.which == 37) {
-        cameraState.rotation[1] -= 1.5;
+        cameraRotation[1] -= 1.5;
     }
     else if (event.which == 38) {
-        cameraState.position[2] -= 0.1;
+        cameraPosition[2] -= 0.1;
     }
     else if (event.which == 40) {
-        cameraState.position[2] += 0.1;
+        cameraPosition[2] += 0.1;
     }
 
     camera.update();

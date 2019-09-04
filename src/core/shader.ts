@@ -8,7 +8,7 @@ export abstract class Shader {
         this.dataBuffers    = new Array<WebGLBuffer>();
     }
 
-    abstract execute(assets: Array<Asset>, projectionMatrix: mat4): void;
+    abstract execute(assets: Array<Asset>, projectionMatrix: mat4, viewMatrix: mat4): void;
 
     abstract delete(): void;
 
