@@ -1,5 +1,3 @@
-import { Shader } from "./shader";
-
 export interface Asset {
     positionLength: number;
     positionIndex: number;

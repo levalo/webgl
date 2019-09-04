@@ -3,6 +3,7 @@ import { mat4 } from 'gl-matrix';
 
 import { Asset } from './asset';
 import { Shader } from './shader';
+import { Camera } from './camera';
 
 export class Renderer {
     public constructor(canvas: HTMLCanvasElement) {
@@ -13,8 +14,7 @@ export class Renderer {
         }
 
         this.gl                     = <WebGLRenderingContext>gl;
-        this.fieldOfView            = degreeToRadian(45);
-        this.cameraAngle            = 0;
+        this.camera                 = new Camera(gl);
         this.backgroundColor        = new Float32Array(3);
         this.shaderAssetsContainer  = new Array<Array<Asset>>();
         this.shadersContainer       = new Array<Shader>();
@@ -40,20 +40,7 @@ export class Renderer {
         //this.gl.enable(this.gl.CULL_FACE);
         this.gl.enable(this.gl.DEPTH_TEST);
 
-        const aspect                = this.gl.canvas.clientWidth / this.gl.canvas.clientHeight;
-        const zNear                 = 0.1;
-        const zFar                  = 100.0;
-        const projectionMatrix      = mat4.create();
-        const fieldOfView           = this.fieldOfView;
-        const cameraMatrix          = mat4.create();
-        const viewMatrix            = mat4.create();
-        const viewProjectionMatrix  = mat4.create();
-
-        mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
-        mat4.rotateY(cameraMatrix, cameraMatrix, this.cameraAngle);
-        mat4.translate(cameraMatrix, cameraMatrix, [ 0.0, 0.0, 20.0]);
-        mat4.invert(viewMatrix, cameraMatrix);
-        mat4.multiply(viewProjectionMatrix, projectionMatrix, viewMatrix);
+        const viewProjectionMatrix  = this.camera.getViewProjectionMatrix();
 
         for(let i = 0; i < this.shadersContainer.length; i++) {
             const shader        = this.shadersContainer[i];
@@ -65,10 +52,6 @@ export class Renderer {
 
     public setBackgroundColor(color: Float32Array): void {
         this.backgroundColor = color;
-    }
-
-    public setFieldOfView(degree: number): void {
-        this.fieldOfView = degreeToRadian(degree);
     }
 
     public getContext(): WebGLRenderingContext {
@@ -83,15 +66,18 @@ export class Renderer {
         return shaderIndex;
     }
 
-    public setCameraAngle(degree: number): void {
-        this.cameraAngle = degreeToRadian(degree);
+    public getCamera(): Camera {
+        return this.camera;
+    }
+
+    public setCamera(camera: Camera): void {
+        this.camera = camera;
     }
 
     private shaderAssetsContainer: Array<Array<Asset>>;
     private shadersContainer: Array<Shader>;
 
-    private cameraAngle: number;
-    private fieldOfView: number;
+    private camera: Camera;
     private backgroundColor: Float32Array;
 
     private gl: WebGLRenderingContext;
