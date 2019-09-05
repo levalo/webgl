@@ -43,7 +43,7 @@ export class Renderer {
         const aspect                = this.gl.canvas.clientWidth / this.gl.canvas.clientHeight;
         const zNear                 = 0.1;
         const zFar                  = 100.0;
-        const fov                   = 90;
+        const fov                   = 45;
         const cameraMatrix          = this.camera.getCameraMatrix();
         const projectionMatrix      = mat4.create();
         const viewMatrix            = mat4.create();

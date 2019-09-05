@@ -17,12 +17,13 @@ export class Camera {
     }
 
     private computeCameraMatrix(): mat4 {
-        const cameraMatrix      = mat4.create();
+        const cameraMatrix = mat4.create();
 
         mat4.translate(cameraMatrix, cameraMatrix, this.position);
-        mat4.rotateX(cameraMatrix, cameraMatrix, degreeToRadian(this.rotation[0]));
-        mat4.rotateY(cameraMatrix, cameraMatrix, degreeToRadian(this.rotation[1]));
-        mat4.rotateZ(cameraMatrix, cameraMatrix, degreeToRadian(this.rotation[2]));
+
+        mat4.rotate(cameraMatrix, cameraMatrix, degreeToRadian(this.rotation[0]), [1, 0, 0]);
+        mat4.rotate(cameraMatrix, cameraMatrix, degreeToRadian(this.rotation[1]), [0, 1, 0]);
+        mat4.rotate(cameraMatrix, cameraMatrix, degreeToRadian(this.rotation[2]), [0, 0, 1]);
 
         return cameraMatrix;
     }

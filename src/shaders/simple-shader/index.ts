@@ -59,10 +59,11 @@ export class SimpleShader extends Shader {
                 continue;
             }
 
-            mat4.translate(modelViewMatrix, modelViewMatrix, translate);
             mat4.rotate(modelViewMatrix, modelViewMatrix, rotationX, [ 1, 0, 0 ]);
             mat4.rotate(modelViewMatrix, modelViewMatrix, rotationY, [ 0, 1, 0 ]);
             mat4.rotate(modelViewMatrix, modelViewMatrix, rotationZ, [ 0, 0, 1 ]);
+
+            mat4.translate(modelViewMatrix, modelViewMatrix, translate);
 
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
             this.gl.enableVertexAttribArray(this.vertexPositionLocation);

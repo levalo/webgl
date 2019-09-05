@@ -1,4 +1,5 @@
 import { Renderer, SimpleShader } from '../../src';
+import { degreeToRadian } from '../../src/helpers/math';
 
 
 const canvas = <HTMLCanvasElement>document.getElementById("canvas");
@@ -86,21 +87,23 @@ for(let i = -100; i < 100; i += 7) {
 
 renderer.setBackgroundColor(new Float32Array([0.9, 0.9, 0.9]));
 
-cameraPosition[2] = 5;
-camera.update();
+//cameraPosition[2] = 5;
+//camera.update();
 
 document.onkeydown = (event: KeyboardEvent): void => {
     if (event.which == 39) {
-        cameraRotation[1] += 1.5;
-    }
-    else if (event.which == 37) {
         cameraRotation[1] -= 1.5;
     }
+    else if (event.which == 37) {
+        cameraRotation[1] += 1.5;
+    }
     else if (event.which == 38) {
-        cameraPosition[2] -= 0.1;
+        cameraPosition[2] -= Math.cos(degreeToRadian(cameraRotation[1])) + 0.1;
+        cameraPosition[0] -= Math.sin(degreeToRadian(cameraRotation[1])) + 0.1;
     }
     else if (event.which == 40) {
-        cameraPosition[2] += 0.1;
+        cameraPosition[2] += Math.cos(degreeToRadian(cameraRotation[1])) + 0.1;
+        cameraPosition[0] += Math.sin(degreeToRadian(cameraRotation[1])) + 0.1;
     }
 
     camera.update();
