@@ -5,7 +5,7 @@ import fSource from './fragmentShader.glsl';
 import vSource from './vertexShader.glsl';
 import { Renderer } from '../../core/renderer';
 import { Asset } from '../../core/asset';
-import { mat4, vec3 } from 'gl-matrix';
+import { mat4, vec3, quat } from 'gl-matrix';
 import { degreeToRadian } from '../../helpers/math';
 
 export class SimpleShader extends Shader {
@@ -48,10 +48,9 @@ export class SimpleShader extends Shader {
             const positionBuffer    = this.dataBuffers[asset.positionIndex];
             const colorBuffer       = this.dataBuffers[asset.colorIndex];
             const modelViewMatrix   = mat4.create();
-            const translate         = vec3.fromValues(asset.x, asset.y, asset.z);
-            const rotationX         = degreeToRadian(asset.rotation.x);
-            const rotationY         = degreeToRadian(asset.rotation.y);
-            const rotationZ         = degreeToRadian(asset.rotation.z);
+            const translate         = vec3.fromValues(asset.position[0], asset.position[1], asset.position[2]);
+            const rotationQuat      = quat.create();
+            const rotationMatrix    = mat4.create();
 
             if (positionBuffer == null || colorBuffer == null) {
                 console.warn('Requested position buffer not found. Buffer Index: ' + asset.positionIndex);
@@ -59,11 +58,10 @@ export class SimpleShader extends Shader {
                 continue;
             }
 
-            mat4.rotate(modelViewMatrix, modelViewMatrix, rotationX, [ 1, 0, 0 ]);
-            mat4.rotate(modelViewMatrix, modelViewMatrix, rotationY, [ 0, 1, 0 ]);
-            mat4.rotate(modelViewMatrix, modelViewMatrix, rotationZ, [ 0, 0, 1 ]);
-
             mat4.translate(modelViewMatrix, modelViewMatrix, translate);
+            quat.fromEuler(rotationQuat, asset.rotation[0], asset.rotation[1], asset.rotation[2]);
+            mat4.fromQuat(rotationMatrix, rotationQuat);
+            mat4.multiply(modelViewMatrix, modelViewMatrix, rotationMatrix);
 
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
             this.gl.enableVertexAttribArray(this.vertexPositionLocation);

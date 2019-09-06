@@ -40,16 +40,14 @@ export class Renderer {
         //this.gl.enable(this.gl.CULL_FACE);
         this.gl.enable(this.gl.DEPTH_TEST);
 
-        const aspect                = this.gl.canvas.clientWidth / this.gl.canvas.clientHeight;
+        const aspect                = this.gl.canvas.width / this.gl.canvas.height;
         const zNear                 = 0.1;
         const zFar                  = 100.0;
         const fov                   = 45;
-        const cameraMatrix          = this.camera.getCameraMatrix();
         const projectionMatrix      = mat4.create();
-        const viewMatrix            = mat4.create();
+        const viewMatrix            = this.camera.getViewMatrix();
 
         mat4.perspective(projectionMatrix, fov, aspect, zNear, zFar);
-        mat4.invert(viewMatrix, cameraMatrix);
 
         for(let i = 0; i < this.shadersContainer.length; i++) {
             const shader        = this.shadersContainer[i];

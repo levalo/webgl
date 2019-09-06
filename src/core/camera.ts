@@ -3,40 +3,57 @@ import { degreeToRadian } from "../helpers/math";
 
 export class Camera {
     public constructor() {
-        this.rotation       = vec3.create();
-        this.position       = vec3.create();
-        this.cameraMatrix   = this.computeCameraMatrix();
+        this.target     = vec3.create();
+        this.viewMatrix = this.computeViewMatrix();
+        this.distance   = 0;
+        this.height     = 0;
+        this.angle      = 0;
     }
 
-    public getCameraMatrix(): mat4 {
-        return this.cameraMatrix;
+    public getViewMatrix(): mat4 {
+        return this.viewMatrix;
     }
 
     public update(): void {
-        this.cameraMatrix = this.computeCameraMatrix();
+        this.viewMatrix = this.computeViewMatrix();
     }
 
-    private computeCameraMatrix(): mat4 {
-        const cameraMatrix = mat4.create();
+    private computeViewMatrix(): mat4 {
+        const viewMatrix    = mat4.create();
+        const position      = vec3.create();
+        const target        = this.target;
+        
+        vec3.subtract(position, target, [ 0, this.height, this.distance]);
 
-        mat4.translate(cameraMatrix, cameraMatrix, this.position);
+        position[0] = Math.cos(this.angle) * (position[0] - target[0]) - Math.sin(this.angle) * (position[2] - target[2]) + target[0];
+        position[2] = Math.sin(this.angle) * (position[0] - target[0]) + Math.cos(this.angle) * (position[2] - target[2]) + target[2];
 
-        mat4.rotate(cameraMatrix, cameraMatrix, degreeToRadian(this.rotation[0]), [1, 0, 0]);
-        mat4.rotate(cameraMatrix, cameraMatrix, degreeToRadian(this.rotation[1]), [0, 1, 0]);
-        mat4.rotate(cameraMatrix, cameraMatrix, degreeToRadian(this.rotation[2]), [0, 0, 1]);
+        console.log(vec3.distance(position, target));
 
-        return cameraMatrix;
+        mat4.lookAt(viewMatrix, position, target, [0, 1, 0]);
+
+        return viewMatrix;
     }
 
-    public getPosition(): vec3 {
-        return this.position;
+    public setAngle(degree: number): void {
+        this.angle = degreeToRadian(degree);
     }
 
-    public getRotation(): vec3 {
-        return this.rotation;
+    public setDistance(distance: number): void {
+        this.distance = distance;
     }
 
-    private rotation: vec3;
-    private position: vec3;
-    private cameraMatrix: mat4;
+    public setHeight(height: number): void {
+        this.height = height;
+    }
+
+    public setTarget(target: vec3 | number[]) {
+        this.target = target;
+    }
+
+    private height: number;
+    private distance: number;
+    private angle: number;
+    private target: vec3 | number[];
+    private viewMatrix: mat4;
 }

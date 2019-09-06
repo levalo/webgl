@@ -1,14 +1,10 @@
+import { vec3 } from "gl-matrix";
+
 export interface Asset {
     positionLength: number;
     positionIndex: number;
     colorIndex: number;
-    rotation: {
-        x: number,
-        y: number,
-        z: number
-    };
+    rotation: vec3 | number[];
     scale: number;
-    x: number;
-    y: number;
-    z: number;
+    position: vec3 | number[];
 }
