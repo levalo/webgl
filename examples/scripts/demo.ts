@@ -96,22 +96,22 @@ for(let i = 0; i < 100; i += 5) {
 
 document.onkeydown = (event: KeyboardEvent): void => {
     if (event.which == 39) {
-        cubeAsset.rotation[1] -= 1.5;
+        cubeAsset.rotation[1] -= 1;
 
-        camera.setAngle(-1 * cubeAsset.rotation[1]);
+        camera.setAngle(cubeAsset.rotation[1]);
     }
     else if (event.which == 37) {
-        cubeAsset.rotation[1] += 1.5;
+        cubeAsset.rotation[1] += 1;
 
-        camera.setAngle(-1 * cubeAsset.rotation[1]);
+        camera.setAngle(cubeAsset.rotation[1]);
     }
     else if (event.which == 38) {
-        cubeAsset.position[2] -= Math.cos(degreeToRadian(cubeAsset.rotation[1])) * 1.5;
-        cubeAsset.position[0] -= Math.sin(degreeToRadian(cubeAsset.rotation[1])) * 1.5;
+        cubeAsset.position[2] -= Math.cos(degreeToRadian(cubeAsset.rotation[1])) * 1;
+        cubeAsset.position[0] -= Math.sin(degreeToRadian(cubeAsset.rotation[1])) * 1;
     }
     else if (event.which == 40) {
-        cubeAsset.position[2] += Math.cos(degreeToRadian(cubeAsset.rotation[1])) * 1.5;
-        cubeAsset.position[0] += Math.sin(degreeToRadian(cubeAsset.rotation[1])) * 1.5;
+        cubeAsset.position[2] += Math.cos(degreeToRadian(cubeAsset.rotation[1])) * 1;
+        cubeAsset.position[0] += Math.sin(degreeToRadian(cubeAsset.rotation[1])) * 1;
     }
 
     camera.update();

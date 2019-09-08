@@ -1,4 +1,4 @@
-import { vec3, mat4 } from "gl-matrix";
+import { vec3, mat4, mat3, quat } from "gl-matrix";
 import { degreeToRadian } from "../helpers/math";
 
 export class Camera {
@@ -24,19 +24,15 @@ export class Camera {
         const target        = this.target;
         
         vec3.subtract(position, target, [ 0, this.height, this.distance]);
-
-        position[0] = Math.cos(this.angle) * (position[0] - target[0]) - Math.sin(this.angle) * (position[2] - target[2]) + target[0];
-        position[2] = Math.sin(this.angle) * (position[0] - target[0]) + Math.cos(this.angle) * (position[2] - target[2]) + target[2];
-
-        console.log(vec3.distance(position, target));
-
+        vec3.rotateY(position, position, target, degreeToRadian(this.angle));
+        
         mat4.lookAt(viewMatrix, position, target, [0, 1, 0]);
 
         return viewMatrix;
     }
 
     public setAngle(degree: number): void {
-        this.angle = degreeToRadian(degree);
+        this.angle = degree;
     }
 
     public setDistance(distance: number): void {
