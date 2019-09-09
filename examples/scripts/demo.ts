@@ -1,6 +1,5 @@
 import { Renderer, SimpleShader } from '../../src';
 import { degreeToRadian } from '../../src/helpers/math';
-import { vec3, mat2, mat3 } from 'gl-matrix';
 
 
 const canvas = <HTMLCanvasElement>document.getElementById("canvas");
@@ -95,17 +94,7 @@ for(let i = 0; i < 100; i += 5) {
 }
 
 document.onkeydown = (event: KeyboardEvent): void => {
-    if (event.which == 39) {
-        cubeAsset.rotation[1] -= 1;
-
-        camera.setAngle(cubeAsset.rotation[1]);
-    }
-    else if (event.which == 37) {
-        cubeAsset.rotation[1] += 1;
-
-        camera.setAngle(cubeAsset.rotation[1]);
-    }
-    else if (event.which == 38) {
+    if (event.which == 38) {
         cubeAsset.position[2] -= Math.cos(degreeToRadian(cubeAsset.rotation[1])) * 1;
         cubeAsset.position[0] -= Math.sin(degreeToRadian(cubeAsset.rotation[1])) * 1;
     }
@@ -113,6 +102,14 @@ document.onkeydown = (event: KeyboardEvent): void => {
         cubeAsset.position[2] += Math.cos(degreeToRadian(cubeAsset.rotation[1])) * 1;
         cubeAsset.position[0] += Math.sin(degreeToRadian(cubeAsset.rotation[1])) * 1;
     }
+
+    camera.update();
+}
+
+document.onmousemove = (event: MouseEvent): void => {
+    cubeAsset.rotation[1] += event.movementX;
+
+    camera.setAngle(cubeAsset.rotation[1]);
 
     camera.update();
 }
