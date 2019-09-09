@@ -47,21 +47,13 @@ export class SimpleShader extends Shader {
         for(const asset of assets) {
             const positionBuffer    = this.dataBuffers[asset.positionIndex];
             const colorBuffer       = this.dataBuffers[asset.colorIndex];
-            const modelViewMatrix   = mat4.create();
-            const translate         = vec3.fromValues(asset.position[0], asset.position[1], asset.position[2]);
-            const rotationQuat      = quat.create();
-            const rotationMatrix    = mat4.create();
+            const modelViewMatrix   = asset.getModelViewMatrix();
 
             if (positionBuffer == null || colorBuffer == null) {
                 console.warn('Requested position buffer not found. Buffer Index: ' + asset.positionIndex);
 
                 continue;
             }
-
-            mat4.translate(modelViewMatrix, modelViewMatrix, translate);
-            quat.fromEuler(rotationQuat, asset.rotation[0], asset.rotation[1], asset.rotation[2]);
-            mat4.fromQuat(rotationMatrix, rotationQuat);
-            mat4.multiply(modelViewMatrix, modelViewMatrix, rotationMatrix);
 
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
             this.gl.enableVertexAttribArray(this.vertexPositionLocation);

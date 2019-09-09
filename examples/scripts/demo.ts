@@ -1,5 +1,6 @@
 import { Renderer, SimpleShader } from '../../src';
 import { degreeToRadian } from '../../src/helpers/math';
+import { Asset } from '../../src/core/asset';
 
 
 const canvas = <HTMLCanvasElement>document.getElementById("canvas");
@@ -63,14 +64,14 @@ const cubeColors = new Float32Array([
 ]);
 const cubePositionIndex = simpleShader.registrData(cubePositions);
 const cubeColorsIndex = simpleShader.registrData(cubeColors);
-const cubeAsset = {
-    positionLength: cubePositions.length,
-    positionIndex: cubePositionIndex,
-    colorIndex: cubeColorsIndex,
-    scale: 1,
-    rotation: [0, 0, 0],
-    position: [0, 0, 0]
-};
+const cubeAsset = new Asset(
+    [0, 0, 0],
+    [0, 0, 0],
+    0,
+    cubeColorsIndex,
+    cubePositionIndex,
+    cubePositions.length,
+);
 
 camera.setTarget(cubeAsset.position);
 camera.setDistance(-10);
@@ -81,14 +82,14 @@ renderer.addAsset(shaderIndex, cubeAsset);
 renderer.setBackgroundColor(new Float32Array([0.9, 0.9, 0.9]));
 
 for(let i = 0; i < 100; i += 5) {
-    const asset = {
-        positionLength: cubePositions.length,
-        positionIndex: cubePositionIndex,
-        colorIndex: cubeColorsIndex,
-        scale: 1,
-        rotation: [0, 0, 0],
-        position: [i, 0, -15]
-    };
+    const asset = new Asset(
+        [i, 0, -15],
+        [0, 0, 0],
+        0,
+        cubeColorsIndex,
+        cubePositionIndex,
+        cubePositions.length,
+    );
 
     renderer.addAsset(shaderIndex, asset);
 }
@@ -103,6 +104,7 @@ document.onkeydown = (event: KeyboardEvent): void => {
         cubeAsset.position[0] += Math.sin(degreeToRadian(cubeAsset.rotation[1])) * 1;
     }
 
+    cubeAsset.update();
     camera.update();
 }
 
@@ -111,6 +113,7 @@ document.onmousemove = (event: MouseEvent): void => {
 
     camera.setAngle(cubeAsset.rotation[1]);
 
+    cubeAsset.update();
     camera.update();
 }
 
