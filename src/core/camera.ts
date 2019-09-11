@@ -7,7 +7,8 @@ export class Camera {
         this.viewMatrix = this.computeViewMatrix();
         this.distance   = 0;
         this.height     = 0;
-        this.angle      = 0;
+        this.angleX     = 0;
+        this.angleY     = 0;
     }
 
     public getViewMatrix(): mat4 {
@@ -24,15 +25,32 @@ export class Camera {
         const target        = this.target;
         
         vec3.subtract(position, target, [ 0, this.height, this.distance]);
-        vec3.rotateY(position, position, target, degreeToRadian(this.angle));
+        vec3.rotateY(position, position, target, degreeToRadian(this.angleY));
+        vec3.rotateX(position, position, target, degreeToRadian(this.angleX));
         
         mat4.lookAt(viewMatrix, position, target, [0, 1, 0]);
 
         return viewMatrix;
     }
 
-    public setAngle(degree: number): void {
-        this.angle = degree;
+    public setAngleX(degree: number): void {
+        this.angleX = degree;
+    }
+
+    public setAngleY(degree: number): void {
+        this.angleY = degree;
+    }
+
+    public addAngleX(degree: number): void {
+        this.angleX += degree;
+    }
+
+    public addAngleY(degree: number): void {
+        this.angleY += degree;
+    }
+
+    public addDistance(distance: number): void {
+        this.distance += distance;
     }
 
     public setDistance(distance: number): void {
@@ -49,7 +67,8 @@ export class Camera {
 
     private height: number;
     private distance: number;
-    private angle: number;
+    private angleX: number;
+    private angleY: number;
     private target: vec3 | number[];
     private viewMatrix: mat4;
 }
