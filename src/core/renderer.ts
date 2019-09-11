@@ -18,6 +18,7 @@ export class Renderer {
         this.backgroundColor        = new Float32Array(3);
         this.shaderAssetsContainer  = new Array<Array<Asset>>();
         this.shadersContainer       = new Array<Shader>();
+        this.dataBuffers            = new Array<WebGLBuffer>();
     }
 
     public addAsset(shaderIndex: number, asset: Asset): void {
@@ -37,7 +38,7 @@ export class Renderer {
         this.gl.clearDepth(1.0);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
-        //this.gl.enable(this.gl.CULL_FACE);
+        this.gl.enable(this.gl.CULL_FACE);
         this.gl.enable(this.gl.DEPTH_TEST);
 
         const aspect                = this.gl.canvas.width / this.gl.canvas.height;
@@ -80,6 +81,28 @@ export class Renderer {
     public setCamera(camera: Camera): void {
         this.camera = camera;
     }
+
+    public createArrayBuffer(data: Float32Array | Uint16Array): number {
+        const buffer = <WebGLBuffer>this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, data, this.gl.STATIC_DRAW);
+
+        return this.dataBuffers.push(buffer) - 1;
+    }
+
+    public createElementsBuffer(data: Float32Array | Uint16Array): number {
+        const buffer = <WebGLBuffer>this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, buffer);
+        this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, data, this.gl.STATIC_DRAW);
+
+        return this.dataBuffers.push(buffer) - 1;
+    }
+
+    public getDataBuffers(): Array<WebGLBuffer> {
+        return this.dataBuffers;
+    }
+
+    private dataBuffers: Array<WebGLBuffer>;
 
     private shaderAssetsContainer: Array<Array<Asset>>;
     private shadersContainer: Array<Shader>;

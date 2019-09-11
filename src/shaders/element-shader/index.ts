@@ -1,13 +1,13 @@
 import { Shader } from '../../core/shader';
 import { loadShader } from '../../helpers/webgl';
 
-import fSource from './fragmentShader.glsl';
-import vSource from './vertexShader.glsl';
+import fSource from '../simple-shader/fragmentShader.glsl';
+import vSource from '../simple-shader/vertexShader.glsl';
 import { Renderer } from '../../core/renderer';
 import { Asset } from '../../core/asset';
 import { mat4 } from 'gl-matrix';
 
-export class SimpleShader extends Shader {
+export class ElementShader extends Shader {
 
     public constructor(renderer: Renderer) {
         super(renderer);
@@ -46,9 +46,10 @@ export class SimpleShader extends Shader {
         for(const asset of assets) {
             const positionBuffer    = this.dataBuffers[asset.positionIndex];
             const colorBuffer       = this.dataBuffers[asset.colorIndex];
+            const indecesBuffer     = this.dataBuffers[asset.faceIndex];
             const modelViewMatrix   = asset.getModelViewMatrix();
 
-            if (positionBuffer == null || colorBuffer == null) {
+            if (positionBuffer == null || colorBuffer == null || indecesBuffer == null) {
                 console.warn('Requested position buffer not found. Buffer Index: ' + asset.positionIndex);
 
                 continue;
@@ -62,11 +63,13 @@ export class SimpleShader extends Shader {
             this.gl.enableVertexAttribArray(this.vertexColorLocation);
             this.gl.vertexAttribPointer(this.vertexColorLocation, colorComponents, type, normalize, stride, offset);
 
+            this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indecesBuffer);
+
             this.gl.uniformMatrix4fv(this.projectionLocation, false, projectionMatrix);
             this.gl.uniformMatrix4fv(this.viewLocation, false, viewMatrix);
             this.gl.uniformMatrix4fv(this.modelViewLocation, false, modelViewMatrix);
 
-            this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, asset.vertexCount / vertexComponents);
+            this.gl.drawElements(this.gl.TRIANGLES, asset.vertexCount, this.gl.UNSIGNED_SHORT, 0);
         }
     }
 

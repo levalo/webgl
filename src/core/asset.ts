@@ -6,8 +6,9 @@ export class Asset {
         public rotation: vec3 | number[],
         public scale: number,
         public colorIndex: number,
+        public faceIndex: number,
         public positionIndex: number,
-        public positionLength: number,
+        public vertexCount: number,
     ) { 
         this.modelViewMatrix = this.computeModelViewMatrix();
     }

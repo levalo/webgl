@@ -1,6 +1,5 @@
-import { Renderer, SimpleShader } from '../../src';
+import { Renderer, Asset, ElementShader, SimpleShader } from '../../src';
 import { degreeToRadian } from '../../src/helpers/math';
-import { Asset } from '../../src/core/asset';
 
 
 const canvas = <HTMLCanvasElement>document.getElementById("canvas");
@@ -8,28 +7,55 @@ canvas.width = document.documentElement.clientWidth;
 canvas.height = document.documentElement.clientHeight - 3;
 
 const renderer          = new Renderer(canvas);
+const elementShader     = new ElementShader(renderer);
 const simpleShader      = new SimpleShader(renderer);
-const shaderIndex       = renderer.registrShader(simpleShader);
+const shaderIndex       = renderer.registrShader(elementShader);
 const camera            = renderer.getCamera();
 
 const cubePositions = new Float32Array([
-    -1.0, 1.0, 1.0,     1.0, 1.0, 1.0,
-    -1.0, -1.0, 1.0,    1.0, -1.0, 1.0,
+    // Front face
+    -1.0, -1.0,  1.0,
+     1.0, -1.0,  1.0,
+     1.0,  1.0,  1.0,
+    -1.0,  1.0,  1.0,
 
-    -1.0, 1.0, -1.0,    1.0, 1.0, -1.0,
-    -1.0, -1.0, -1.0,   1.0, -1.0, -1.0,
+    // Back face
+    -1.0, -1.0, -1.0,
+    -1.0,  1.0, -1.0,
+     1.0,  1.0, -1.0,
+     1.0, -1.0, -1.0,
 
-    -1.0, 1.0, 1.0,     1.0, 1.0, 1.0,
-    -1.0, 1.0, -1.0,    1.0, 1.0, -1.0,
+    // Top face
+    -1.0,  1.0, -1.0,
+    -1.0,  1.0,  1.0,
+     1.0,  1.0,  1.0,
+     1.0,  1.0, -1.0,
 
-    -1.0, -1.0, 1.0,    1.0, -1.0, 1.0,
-    -1.0, -1.0, -1.0,   1.0, -1.0, -1.0,
+    // Bottom face
+    -1.0, -1.0, -1.0,
+     1.0, -1.0, -1.0,
+     1.0, -1.0,  1.0,
+    -1.0, -1.0,  1.0,
 
-    -1.0, 1.0, 1.0,     -1.0, 1.0, -1.0,
-    -1.0, -1.0, 1.0,    -1.0, -1.0, -1.0,
+    // Right face
+     1.0, -1.0, -1.0,
+     1.0,  1.0, -1.0,
+     1.0,  1.0,  1.0,
+     1.0, -1.0,  1.0,
 
-    1.0, 1.0, 1.0,      1.0, 1.0, -1.0,
-    1.0, -1.0, 1.0,     1.0, -1.0, -1.0
+    // Left face
+    -1.0, -1.0, -1.0,
+    -1.0, -1.0,  1.0,
+    -1.0,  1.0,  1.0,
+    -1.0,  1.0, -1.0,
+]);
+const cubeIndeces = new Uint16Array([
+    0,  1,  2,      0,  2,  3,    // front
+    4,  5,  6,      4,  6,  7,    // back
+    8,  9,  10,     8,  10, 11,   // top
+    12, 13, 14,     12, 14, 15,   // bottom
+    16, 17, 18,     16, 18, 19,   // right
+    20, 21, 22,     20, 22, 23,   // left
 ]);
 const cubeColors = new Float32Array([
     0.0,  1.0,  1.0,  1.0,    // 
@@ -62,20 +88,22 @@ const cubeColors = new Float32Array([
     1.0,  1.0,  0.0,  1.0,    //
     1.0,  1.0,  0.0,  1.0,    // 
 ]);
-const cubePositionIndex = simpleShader.registrData(cubePositions);
-const cubeColorsIndex = simpleShader.registrData(cubeColors);
+const cubePositionIndex = renderer.createArrayBuffer(cubePositions);
+const cubeColorsIndex   = renderer.createArrayBuffer(cubeColors);
+const cubeFacesIndex    = renderer.createElementsBuffer(cubeIndeces);
 const cubeAsset = new Asset(
     [0, 0, 0],
     [0, 0, 0],
     0,
     cubeColorsIndex,
+    cubeFacesIndex,
     cubePositionIndex,
-    cubePositions.length,
+    cubeIndeces.length,
 );
 
 camera.setTarget(cubeAsset.position);
 camera.setDistance(-10);
-camera.setHeight(-5);
+camera.setHeight(-3);
 camera.update();
 
 renderer.addAsset(shaderIndex, cubeAsset);
@@ -87,8 +115,9 @@ for(let i = 0; i < 100; i += 5) {
         [0, 0, 0],
         0,
         cubeColorsIndex,
+        cubeFacesIndex,
         cubePositionIndex,
-        cubePositions.length,
+        cubeIndeces.length,
     );
 
     renderer.addAsset(shaderIndex, asset);
