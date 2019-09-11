@@ -14,8 +14,8 @@ module.exports = {
                 exclude: /node_modules/
             },
             {
-                test: /\.glsl$/,
-                loader: 'ts-shader-loader'
+                test: /\.(glsl|obj)$/,
+                loader: 'raw-loader'
             }
         ]
     },
