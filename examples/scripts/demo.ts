@@ -1,5 +1,7 @@
 import { Renderer, Asset, ElementShader, SimpleShader } from '../../src';
 import { degreeToRadian } from '../../src/helpers/math';
+import barrel from './barrel.obj';
+import { parseObj } from '../../src/helpers/webgl';
 
 
 const canvas = <HTMLCanvasElement>document.getElementById("canvas");
@@ -101,6 +103,17 @@ const cubeAsset = new Asset(
     cubeIndeces.length,
 );
 
+const barrelObj = parseObj(barrel);
+const barrelPositionIndex = renderer.createArrayBuffer(barrelObj.vertices);
+const barrelFacesIndex = renderer.createElementsBuffer(barrelObj.indices);
+const barrelColors = new Array<number>();
+
+for(let i = 0; i < barrelObj.vertices.length; i += 3) {
+    barrelColors.push(0.0,  1.0,  0.0,  1.0);
+}
+
+const barrelColorsIndex = renderer.createArrayBuffer(new Float32Array(barrelColors));
+
 camera.setTarget(cubeAsset.position);
 camera.setDistance(-10);
 camera.setHeight(-3);
@@ -114,10 +127,10 @@ for(let i = 0; i < 100; i += 5) {
         [i, 0, -15],
         [0, 0, 0],
         0,
-        cubeColorsIndex,
-        cubeFacesIndex,
-        cubePositionIndex,
-        cubeIndeces.length,
+        barrelColorsIndex,
+        barrelFacesIndex,
+        barrelPositionIndex,
+        barrelObj.indices.length,
     );
 
     renderer.addAsset(shaderIndex, asset);
