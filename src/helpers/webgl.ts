@@ -18,7 +18,7 @@ interface Obj {
 
 export const parseObj = (objSource: string): Obj => {
     const vertices = new Array<number>();
-    const indices   = new Array<number>();
+    const indices  = new Array<number>();
 
     objSource.split('\n').forEach(line => {
         if (line.startsWith('v ')) {

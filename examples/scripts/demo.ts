@@ -3,30 +3,29 @@ import barrel from './barrel.obj';
 import { parseObj } from '../../src/helpers/webgl';
 
 
-const canvas = <HTMLCanvasElement>document.getElementById("canvas");
-canvas.width = document.documentElement.clientWidth;
-canvas.height = document.documentElement.clientHeight - 3;
+const canvas    = <HTMLCanvasElement>document.getElementById("canvas");
+canvas.width    = document.documentElement.clientWidth;
+canvas.height   = document.documentElement.clientHeight - 3;
 
-const renderer          = new Renderer(canvas);
-const elementShader     = new ElementShader(renderer);
-const shaderIndex       = renderer.registrShader(elementShader);
-const camera            = renderer.getCamera();
-
-const barrelObj = parseObj(barrel);
-const barrelPositionIndex = renderer.createArrayBuffer(barrelObj.vertices);
-const barrelFacesIndex = renderer.createElementsBuffer(barrelObj.indices);
-const barrelColors = new Array<number>();
+const renderer              = new Renderer(canvas);
+const elementShader         = new ElementShader(renderer);
+const shaderIndex           = renderer.registrShader(elementShader);
+const camera                = renderer.getCamera();
+const barrelObj             = parseObj(barrel);
+const barrelPositionIndex   = renderer.createArrayBuffer(barrelObj.vertices);
+const barrelFacesIndex      = renderer.createElementsBuffer(barrelObj.indices);
+const barrelColors          = new Array<number>();
 
 for(let i = 0; i < barrelObj.vertices.length; i += 3) {
-    barrelColors.push(Math.random(),  Math.random(),  Math.random(),  1.0);
+    barrelColors.push(barrelObj.vertices[i],  barrelObj.vertices[i],  barrelObj.vertices[i],  1.0);
 }
 
 const barrelColorsIndex = renderer.createArrayBuffer(new Float32Array(barrelColors));
 
 const barrelAsset = new Asset(
-    [0, 0, 0],
-    [0, 0, 0],
-    0,
+    [0, 0, 0],      // translate
+    [0, 220, 0],    // rotate
+    [2, 2, 2],      // scale
     barrelColorsIndex,
     barrelFacesIndex,
     barrelPositionIndex,
@@ -56,7 +55,7 @@ document.onmouseup = (event: MouseEvent): void => {
 
 document.onwheel = (event: WheelEvent): void => {
     camera.addDistance(event.deltaY);
-    
+
     camera.update();
 }
 

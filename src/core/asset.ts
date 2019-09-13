@@ -4,7 +4,7 @@ export class Asset {
     public constructor(
         public position: vec3 | number[],
         public rotation: vec3 | number[],
-        public scale: number,
+        public scale: vec3 | number[],
         public colorIndex: number,
         public faceIndex: number,
         public positionIndex: number,
@@ -31,6 +31,7 @@ export class Asset {
         quat.fromEuler(rotationQuat, this.rotation[0], this.rotation[1], this.rotation[2]);
         mat4.fromQuat(rotationMatrix, rotationQuat);
         mat4.multiply(modelViewMatrix, modelViewMatrix, rotationMatrix);
+        mat4.scale(modelViewMatrix, modelViewMatrix, [this.scale[0], this.scale[1], this.scale[2]]);
 
         return modelViewMatrix;
     }
