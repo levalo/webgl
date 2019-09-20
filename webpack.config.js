@@ -15,7 +15,11 @@ module.exports = {
             },
             {
                 test: /\.(glsl|obj)$/,
-                loader: 'raw-loader'
+                use: 'raw-loader'
+            },
+            {
+                test: /\.(png|jp(e*)g|svg)$/,  
+                use: 'url-loader'
             }
         ]
     },

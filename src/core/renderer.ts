@@ -1,4 +1,4 @@
-import { degreeToRadian } from '../helpers/math';
+import { degreeToRadian, isPowerOf2 } from '../helpers/math';
 import { mat4 } from 'gl-matrix';
 
 import { Asset } from './asset';
@@ -19,6 +19,7 @@ export class Renderer {
         this.shaderAssetsContainer  = new Array<Array<Asset>>();
         this.shadersContainer       = new Array<Shader>();
         this.dataBuffers            = new Array<WebGLBuffer>();
+        this.texturesContainer       = new Array<WebGLTexture>();
     }
 
     public addAsset(shaderIndex: number, asset: Asset): void {
@@ -98,11 +99,43 @@ export class Renderer {
         return this.dataBuffers.push(buffer) - 1;
     }
 
+    public createTexture(txSource: string): number {
+        const texture           = <WebGLTexture>this.gl.createTexture();
+        const image             = new Image();
+        const level             = 0;
+        const internalFormat    = this.gl.RGBA;
+        const srcFormat         = this.gl.RGBA;
+        const srcType           = this.gl.UNSIGNED_BYTE;
+
+        image.onload = () => {
+            this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
+            this.gl.texImage2D(this.gl.TEXTURE_2D, level, internalFormat, srcFormat, srcType, image);
+            
+            if (isPowerOf2(image.width) && isPowerOf2(image.height)) {
+                this.gl.generateMipmap(this.gl.TEXTURE_2D);
+            } 
+            else {
+                this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
+                this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
+                this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
+            }
+        };
+
+        image.src = txSource;
+
+        return this.texturesContainer.push(texture) - 1;
+    }
+
     public getDataBuffers(): Array<WebGLBuffer> {
         return this.dataBuffers;
     }
 
+    public getTexturesContainer(): Array<WebGLTexture> {
+        return this.texturesContainer;
+    }
+
     private dataBuffers: Array<WebGLBuffer>;
+    private texturesContainer: Array<WebGLTexture>;
 
     private shaderAssetsContainer: Array<Array<Asset>>;
     private shadersContainer: Array<Shader>;

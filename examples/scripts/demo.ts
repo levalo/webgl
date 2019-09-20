@@ -1,7 +1,7 @@
 import { Renderer, Asset, ElementShader, SimpleShader } from '../../src';
 import barrel from './barrel.obj';
+import * as barrelTx from './barrel_tx_base.png';
 import { parseObj } from '../../src/helpers/webgl';
-
 
 const canvas    = <HTMLCanvasElement>document.getElementById("canvas");
 canvas.width    = document.documentElement.clientWidth;
@@ -13,8 +13,12 @@ const shaderIndex           = renderer.registrShader(elementShader);
 const camera                = renderer.getCamera();
 const barrelObj             = parseObj(barrel);
 const barrelPositionIndex   = renderer.createArrayBuffer(barrelObj.vertices);
+const barrelTexelsIndex     = renderer.createArrayBuffer(barrelObj.texels);
 const barrelFacesIndex      = renderer.createElementsBuffer(barrelObj.indices);
 const barrelColors          = new Array<number>();
+const barrelTextureIndex    = renderer.createTexture(barrelTx);
+
+console.log(barrelObj);
 
 for(let i = 0; i < barrelObj.vertices.length; i += 3) {
     barrelColors.push(barrelObj.vertices[i],  barrelObj.vertices[i],  barrelObj.vertices[i],  1.0);
@@ -27,6 +31,8 @@ const barrelAsset = new Asset(
     [0, 220, 0],    // rotate
     [2, 2, 2],      // scale
     barrelColorsIndex,
+    barrelTexelsIndex,
+    barrelTextureIndex,
     barrelFacesIndex,
     barrelPositionIndex,
     barrelObj.indices.length,
