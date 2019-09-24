@@ -1,6 +1,6 @@
 import { Renderer, Asset, ElementShader, SimpleShader } from '../../src';
-import barrel from './barrel.obj';
-import * as barrelTx from './barrel_tx_base.png';
+import box from './box.obj';
+import * as boxTx from './box_tx_base.png';
 import { parseObj } from '../../src/helpers/webgl';
 
 const canvas    = <HTMLCanvasElement>document.getElementById("canvas");
@@ -11,39 +11,37 @@ const renderer              = new Renderer(canvas);
 const elementShader         = new ElementShader(renderer);
 const shaderIndex           = renderer.registrShader(elementShader);
 const camera                = renderer.getCamera();
-const barrelObj             = parseObj(barrel);
-const barrelPositionIndex   = renderer.createArrayBuffer(barrelObj.vertices);
-const barrelTexelsIndex     = renderer.createArrayBuffer(barrelObj.texels);
-const barrelFacesIndex      = renderer.createElementsBuffer(barrelObj.indices);
-const barrelColors          = new Array<number>();
-const barrelTextureIndex    = renderer.createTexture(barrelTx);
+const boxObj             = parseObj(box);
+const boxPositionIndex   = renderer.createArrayBuffer(boxObj.vertices);
+const boxTexelsIndex     = renderer.createArrayBuffer(boxObj.texels);
+const boxFacesIndex      = renderer.createElementsBuffer(boxObj.indices);
+const boxColors          = new Array<number>();
+const boxTextureIndex    = renderer.createTexture(boxTx);
 
-console.log(barrelObj);
-
-for(let i = 0; i < barrelObj.vertices.length; i += 3) {
-    barrelColors.push(barrelObj.vertices[i],  barrelObj.vertices[i],  barrelObj.vertices[i],  1.0);
+for(let i = 0; i < boxObj.vertices.length; i += 3) {
+    boxColors.push(boxObj.vertices[i],  boxObj.vertices[i],  boxObj.vertices[i],  1.0);
 }
 
-const barrelColorsIndex = renderer.createArrayBuffer(new Float32Array(barrelColors));
+const boxColorsIndex = renderer.createArrayBuffer(new Float32Array(boxColors));
 
-const barrelAsset = new Asset(
+const boxAsset = new Asset(
     [0, 0, 0],      // translate
     [0, 220, 0],    // rotate
     [2, 2, 2],      // scale
-    barrelColorsIndex,
-    barrelTexelsIndex,
-    barrelTextureIndex,
-    barrelFacesIndex,
-    barrelPositionIndex,
-    barrelObj.indices.length,
+    boxColorsIndex,
+    boxTexelsIndex,
+    boxTextureIndex,
+    boxFacesIndex,
+    boxPositionIndex,
+    boxObj.indices.length,
 );
 
-camera.setTarget(barrelAsset.position);
+camera.setTarget(boxAsset.position);
 camera.setDistance(-10);
 camera.setHeight(-3);
 camera.update();
 
-renderer.addAsset(shaderIndex, barrelAsset);
+renderer.addAsset(shaderIndex, boxAsset);
 renderer.setBackgroundColor(new Float32Array([0.9, 0.9, 0.9]));
 
 document.onmousedown = (event: MouseEvent): void => {
