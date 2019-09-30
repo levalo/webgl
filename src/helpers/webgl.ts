@@ -15,15 +15,18 @@ interface Obj {
     vertices: Float32Array,
     indices: Uint16Array,
     texels: Float32Array,
+    normals: Float32Array
 }
 
 export const parseObj = (objSource: string): Obj => {
     const vertices          = new Array<number>();
     const texels            = new Array<number>();
+    const normals           = new Array<number>();
     const indices           = new Array<number[]>();
     const lines             = objSource.split('\n');
     const resultVertices    = new Array<number>();
     const resultTexels      = new Array<number>();
+    const resultNormals     = new Array<number>();
     const resultIndeces     = new Array<number>();
 
     for(let line of lines) {
@@ -33,6 +36,10 @@ export const parseObj = (objSource: string): Obj => {
 
         if (line.startsWith('vt ')) {
             texels.push(...line.replace('vt ', '').split(' ').map(Number));
+        }
+
+        if (line.startsWith('vn ')) {
+            normals.push(...line.replace('vn ', '').split(' ').map(Number));
         }
 
         if (line.startsWith('f ')) {
@@ -45,11 +52,16 @@ export const parseObj = (objSource: string): Obj => {
     for(let index of indices) {
         const vertexIndex   = index[0] - 1;
         const texelIndex    = index[1] - 1;
+        const normalIndex   = index[2] - 1;
 
 
         resultVertices[texelIndex * 3]     = vertices[vertexIndex * 3];
         resultVertices[texelIndex * 3 + 1] = vertices[vertexIndex * 3 + 1];
         resultVertices[texelIndex * 3 + 2] = vertices[vertexIndex * 3 + 2];
+
+        resultNormals[texelIndex * 3]      = normals[normalIndex * 3];
+        resultNormals[texelIndex * 3 + 1]  = normals[normalIndex * 3 + 1];
+        resultNormals[texelIndex * 3 + 2]  = normals[normalIndex * 3 + 2];
 
         resultTexels[texelIndex * 2]       = texels[texelIndex * 2];
         resultTexels[texelIndex * 2 + 1]   = texels[texelIndex * 2 + 1];
@@ -61,6 +73,7 @@ export const parseObj = (objSource: string): Obj => {
     return { 
         vertices: new Float32Array(resultVertices), 
         indices: new Uint16Array(resultIndeces),
-        texels: new Float32Array(resultTexels) 
+        texels: new Float32Array(resultTexels),
+        normals: new Float32Array(resultNormals) 
     };
 }

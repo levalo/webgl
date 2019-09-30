@@ -5,7 +5,7 @@ import fSource from './fragmentShader.glsl';
 import vSource from './vertexShader.glsl';
 import { Renderer } from '../../core/renderer';
 import { Asset } from '../../core/asset';
-import { mat4 } from 'gl-matrix';
+import { mat4, vec3 } from 'gl-matrix';
 
 export class ElementShader extends Shader {
 
@@ -26,12 +26,14 @@ export class ElementShader extends Shader {
             throw new Error('Unable to initialize the shader program: ' + this.gl.getProgramInfoLog(this.program));
         }
 
-        this.vertexPositionLocation = this.gl.getAttribLocation(this.program, 'aVertexPosition');
-        this.texelCoordLocation     = this.gl.getAttribLocation(this.program, 'aTexelCoord');
-        this.projectionLocation     = <WebGLUniformLocation>this.gl.getUniformLocation(this.program, 'uProjectionMatrix');
-        this.viewLocation           = <WebGLUniformLocation>this.gl.getUniformLocation(this.program, 'uViewMatrix');
-        this.modelViewLocation      = <WebGLUniformLocation>this.gl.getUniformLocation(this.program, 'uModelViewMatrix');
-        this.samplerLocation        = <WebGLUniformLocation>this.gl.getUniformLocation(this.program, 'uSampler');
+        this.vertexPositionLocation         = this.gl.getAttribLocation(this.program, 'aVertexPosition');
+        this.normalLocation                 = this.gl.getAttribLocation(this.program, 'aNormal');
+        this.texelCoordLocation             = this.gl.getAttribLocation(this.program, 'aTexelCoord');
+        this.projectionLocation             = <WebGLUniformLocation>this.gl.getUniformLocation(this.program, 'uProjectionMatrix');
+        this.viewLocation                   = <WebGLUniformLocation>this.gl.getUniformLocation(this.program, 'uViewMatrix');
+        this.modelViewLocation              = <WebGLUniformLocation>this.gl.getUniformLocation(this.program, 'uModelViewMatrix');
+        this.samplerLocation                = <WebGLUniformLocation>this.gl.getUniformLocation(this.program, 'uSampler');
+        this.reverseLightDirectionLoaction  = <WebGLUniformLocation>this.gl.getUniformLocation(this.program, 'uReverseLightDirection');
     }
     
     public execute(assets: Array<Asset>, projectionMatrix: mat4, viewMatrix: mat4): void {
@@ -47,11 +49,15 @@ export class ElementShader extends Shader {
         for(const asset of assets) {
             const positionBuffer    = this.dataBuffers[asset.positionIndex];
             const texelsBuffer      = this.dataBuffers[asset.texelsIndex];
+            const normalsBuffer     = this.dataBuffers[asset.normalsIndex];
             const indecesBuffer     = this.dataBuffers[asset.faceIndex];
             const texture           = this.textureContainer[asset.textureIndex];
             const modelViewMatrix   = asset.getModelViewMatrix();
+            const lightDirection    = vec3.create();
 
-            if (positionBuffer == null || texelsBuffer == null || indecesBuffer == null) {
+            vec3.normalize(lightDirection, asset.lightDirection);
+
+            if (positionBuffer == null || texelsBuffer == null || normalsBuffer == null || indecesBuffer == null) {
                 console.warn('Requested position buffer not found. Buffer Index: ' + asset.positionIndex);
 
                 continue;
@@ -65,10 +71,15 @@ export class ElementShader extends Shader {
             this.gl.enableVertexAttribArray(this.texelCoordLocation);
             this.gl.vertexAttribPointer(this.texelCoordLocation, textureComponents, type, normalize, stride, offset);
 
+            this.gl.bindBuffer(this.gl.ARRAY_BUFFER, normalsBuffer);
+            this.gl.enableVertexAttribArray(this.normalLocation);
+            this.gl.vertexAttribPointer(this.normalLocation, vertexComponents, type, normalize, stride, offset);
+
             this.gl.uniformMatrix4fv(this.projectionLocation, false, projectionMatrix);
             this.gl.uniformMatrix4fv(this.viewLocation, false, viewMatrix);
             this.gl.uniformMatrix4fv(this.modelViewLocation, false, modelViewMatrix);
             this.gl.uniform1i(this.samplerLocation, 0);
+            this.gl.uniform3fv(this.reverseLightDirectionLoaction, lightDirection);
 
             this.gl.activeTexture(this.gl.TEXTURE0);
             this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
@@ -92,11 +103,13 @@ export class ElementShader extends Shader {
     
 
     private texelCoordLocation: number;
+    private normalLocation: number;
     private vertexPositionLocation: number;
     private projectionLocation: WebGLUniformLocation;
     private viewLocation: WebGLUniformLocation;
     private modelViewLocation: WebGLUniformLocation;
     private samplerLocation: WebGLUniformLocation;
+    private reverseLightDirectionLoaction: WebGLUniformLocation;
 
     private fShader: WebGLShader;
     private vShader: WebGLShader;
