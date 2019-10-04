@@ -1,5 +1,4 @@
 export { Renderer } from './core/renderer';
-export { SimpleShader } from './shaders/simple-shader';
-export { ElementShader } from './shaders/element-shader';
+export { AssetShader } from './shaders/asset-shader';
 export { Camera } from './core/camera';
 export { Asset } from './core/asset';

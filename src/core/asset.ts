@@ -6,7 +6,6 @@ export class Asset {
         public rotation: vec3 | number[],
         public scale: vec3 | number[],
         public lightDirection: vec3 | number[],
-        public colorIndex: number,
         public texelsIndex: number,
         public textureIndex: number,
         public normalsIndex: number,

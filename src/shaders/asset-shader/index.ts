@@ -7,7 +7,7 @@ import { Renderer } from '../../core/renderer';
 import { Asset } from '../../core/asset';
 import { mat4, vec3 } from 'gl-matrix';
 
-export class ElementShader extends Shader {
+export class AssetShader extends Shader {
 
     public constructor(renderer: Renderer) {
         super(renderer);
@@ -56,12 +56,6 @@ export class ElementShader extends Shader {
             const lightDirection    = vec3.create();
 
             vec3.normalize(lightDirection, asset.lightDirection);
-
-            if (positionBuffer == null || texelsBuffer == null || normalsBuffer == null || indecesBuffer == null) {
-                console.warn('Requested position buffer not found. Buffer Index: ' + asset.positionIndex);
-
-                continue;
-            }
 
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
             this.gl.enableVertexAttribArray(this.vertexPositionLocation);

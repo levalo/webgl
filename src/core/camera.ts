@@ -25,8 +25,8 @@ export class Camera {
         const target        = this.target;
         
         vec3.subtract(position, target, [ 0, this.height, this.distance]);
-        vec3.rotateY(position, position, target, degreeToRadian(this.angleY));
         vec3.rotateX(position, position, target, degreeToRadian(this.angleX));
+        vec3.rotateY(position, position, target, degreeToRadian(this.angleY));
         
         mat4.lookAt(viewMatrix, position, target, [0, 1, 0]);
 
