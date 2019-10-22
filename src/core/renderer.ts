@@ -19,7 +19,7 @@ export class Renderer {
         this.shaderAssetsContainer  = new Array<Array<Asset>>();
         this.shadersContainer       = new Array<Shader>();
         this.dataBuffers            = new Array<WebGLBuffer>();
-        this.texturesContainer       = new Array<WebGLTexture>();
+        this.texturesContainer      = new Array<WebGLTexture>();
     }
 
     public addAsset(shaderIndex: number, asset: Asset): void {

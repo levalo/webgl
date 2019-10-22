@@ -1,7 +1,7 @@
-import { Renderer, Asset, AssetShader } from '../../src';
-import box from './barrel.obj';
-import * as boxTx from './barrel_tx_base.png';
-import { parseObj } from '../../src/helpers/webgl';
+import { Renderer, Asset, AssetShader } from '../../../src';
+import barrel from '../res/barrel.obj';
+import * as barrelTx from '../res/barrel_tx_base.png';
+import { parseObj } from '../../../src/helpers/webgl';
 import { vec3 } from 'gl-matrix';
 
 const canvas    = <HTMLCanvasElement>document.getElementById("canvas");
@@ -12,34 +12,34 @@ const renderer              = new Renderer(canvas);
 const assetShader           = new AssetShader(renderer);
 const shaderIndex           = renderer.registrShader(assetShader);
 const camera                = renderer.getCamera();
-const boxObj                = parseObj(box);
-const boxPositionIndex      = renderer.createArrayBuffer(boxObj.vertices);
-const boxTexelsIndex        = renderer.createArrayBuffer(boxObj.texels);
-const boxNormalsIndex       = renderer.createArrayBuffer(boxObj.normals);
-const boxFacesIndex         = renderer.createElementsBuffer(boxObj.indices);
-const boxTextureIndex       = renderer.createTexture(boxTx);
+const barrelObj                = parseObj(barrel);
+const barrelPositionIndex      = renderer.createArrayBuffer(barrelObj.vertices);
+const barrelTexelsIndex        = renderer.createArrayBuffer(barrelObj.texels);
+const barrelNormalsIndex       = renderer.createArrayBuffer(barrelObj.normals);
+const barrelFacesIndex         = renderer.createElementsBuffer(barrelObj.indices);
+const barrelTextureIndex       = renderer.createTexture(barrelTx);
 
 const lightDirection = vec3.fromValues(0, 4, 10);
 
-const boxAsset = new Asset(
+const barrelAsset = new Asset(
     [0, 0, 0],      // translate
     [0, 0, 0],      // rotate
     [2, 2, 2],      // scale
     lightDirection,
-    boxTexelsIndex,
-    boxTextureIndex,
-    boxNormalsIndex,
-    boxFacesIndex,
-    boxPositionIndex,
-    boxObj.indices.length,
+    barrelTexelsIndex,
+    barrelTextureIndex,
+    barrelNormalsIndex,
+    barrelFacesIndex,
+    barrelPositionIndex,
+    barrelObj.indices.length,
 );
 
-camera.setTarget(boxAsset.position);
+camera.setTarget(barrelAsset.position);
 camera.setDistance(-10);
 camera.setHeight(0);
 camera.update();
 
-renderer.addAsset(shaderIndex, boxAsset);
+renderer.addAsset(shaderIndex, barrelAsset);
 renderer.setBackgroundColor(new Float32Array([0.9, 0.9, 0.9]));
 
 let cameraAngleX = 0;

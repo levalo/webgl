@@ -9,6 +9,6 @@
     },
     "include": [
         "src/**/*",
-        "examples/scripts/**/*"
+        "examples/barrel/scripts/**/*"
     ]
 }
