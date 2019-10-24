@@ -1,7 +1,7 @@
 import { degreeToRadian, isPowerOf2 } from '../helpers/math';
 import { mat4 } from 'gl-matrix';
 
-import { Asset } from './asset';
+import { Geometry } from './geometry';
 import { Shader } from './shader';
 import { Camera } from './camera';
 
@@ -16,13 +16,13 @@ export class Renderer {
         this.gl                     = <WebGLRenderingContext>gl;
         this.camera                 = new Camera();
         this.backgroundColor        = new Float32Array(3);
-        this.shaderAssetsContainer  = new Array<Array<Asset>>();
+        this.shaderAssetsContainer  = new Array<Array<Geometry>>();
         this.shadersContainer       = new Array<Shader>();
         this.dataBuffers            = new Array<WebGLBuffer>();
         this.texturesContainer      = new Array<WebGLTexture>();
     }
 
-    public addAsset(shaderIndex: number, asset: Asset): void {
+    public addAsset(shaderIndex: number, asset: Geometry): void {
         const assetsContainer = this.shaderAssetsContainer[shaderIndex];
 
         if (assetsContainer == null) {
@@ -39,7 +39,7 @@ export class Renderer {
         this.gl.clearDepth(1.0);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
-        this.gl.enable(this.gl.CULL_FACE);
+        // this.gl.enable(this.gl.CULL_FACE);
         this.gl.enable(this.gl.DEPTH_TEST);
 
         const aspect                = this.gl.canvas.width / this.gl.canvas.height;
@@ -70,7 +70,7 @@ export class Renderer {
     public registrShader(shader: Shader): number {
         const shaderIndex = this.shadersContainer.push(shader) - 1;
 
-        this.shaderAssetsContainer[shaderIndex] = new Array<Asset>();
+        this.shaderAssetsContainer[shaderIndex] = new Array<Geometry>();
 
         return shaderIndex;
     }
@@ -137,7 +137,7 @@ export class Renderer {
     private dataBuffers: Array<WebGLBuffer>;
     private texturesContainer: Array<WebGLTexture>;
 
-    private shaderAssetsContainer: Array<Array<Asset>>;
+    private shaderAssetsContainer: Array<Array<Geometry>>;
     private shadersContainer: Array<Shader>;
 
     private camera: Camera;

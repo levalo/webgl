@@ -1,8 +1,6 @@
-import { Renderer, Asset, AssetShader } from '../../../src';
+import { Renderer, Geometry, AssetShader, parseObj } from '../../../src';
 import barrel from '../res/barrel.obj';
 import * as barrelTx from '../res/barrel_tx_base.png';
-import { parseObj } from '../../../src/helpers/webgl';
-import { vec3 } from 'gl-matrix';
 
 const canvas    = <HTMLCanvasElement>document.getElementById("canvas");
 canvas.width    = document.documentElement.clientWidth;
@@ -12,26 +10,24 @@ const renderer              = new Renderer(canvas);
 const assetShader           = new AssetShader(renderer);
 const shaderIndex           = renderer.registrShader(assetShader);
 const camera                = renderer.getCamera();
-const barrelObj                = parseObj(barrel);
-const barrelPositionIndex      = renderer.createArrayBuffer(barrelObj.vertices);
-const barrelTexelsIndex        = renderer.createArrayBuffer(barrelObj.texels);
-const barrelNormalsIndex       = renderer.createArrayBuffer(barrelObj.normals);
-const barrelFacesIndex         = renderer.createElementsBuffer(barrelObj.indices);
-const barrelTextureIndex       = renderer.createTexture(barrelTx);
+const barrelObj             = parseObj(barrel);
+const barrelPositionIndex   = renderer.createArrayBuffer(barrelObj.vertices);
+const barrelTexelsIndex     = renderer.createArrayBuffer(barrelObj.texels);
+const barrelNormalsIndex    = renderer.createArrayBuffer(barrelObj.normals);
+const barrelFacesIndex      = renderer.createElementsBuffer(barrelObj.indices);
+const barrelTextureIndex    = renderer.createTexture(barrelTx);
 
-const lightDirection = vec3.fromValues(0, 4, 10);
-
-const barrelAsset = new Asset(
+const barrelAsset = new Geometry(
     [0, 0, 0],      // translate
     [0, 0, 0],      // rotate
     [2, 2, 2],      // scale
-    lightDirection,
+    [0, 4, 10],     // lightDirection
     barrelTexelsIndex,
     barrelTextureIndex,
     barrelNormalsIndex,
     barrelFacesIndex,
     barrelPositionIndex,
-    barrelObj.indices.length,
+    barrelObj.indices.length
 );
 
 camera.setTarget(barrelAsset.position);

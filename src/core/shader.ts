@@ -1,5 +1,5 @@
 import { Renderer } from './renderer';
-import { Asset } from './asset';
+import { Geometry } from './geometry';
 import { mat4 } from 'gl-matrix';
 
 export abstract class Shader {
@@ -9,7 +9,7 @@ export abstract class Shader {
         this.textureContainer   = renderer.getTexturesContainer();
     }
 
-    abstract execute(assets: Array<Asset>, projectionMatrix: mat4, viewMatrix: mat4): void;
+    abstract execute(assets: Array<Geometry>, projectionMatrix: mat4, viewMatrix: mat4): void;
 
     abstract delete(): void;
 
