@@ -27,6 +27,7 @@ export class TerrainShader extends Shader {
         }
 
         this.vertexPositionLocation         = this.gl.getAttribLocation(this.program, 'aVertexPosition');
+        this.texelCoordLocation             = this.gl.getAttribLocation(this.program, 'aTexelCoord');
         this.projectionLocation             = <WebGLUniformLocation>this.gl.getUniformLocation(this.program, 'uProjectionMatrix');
         this.viewLocation                   = <WebGLUniformLocation>this.gl.getUniformLocation(this.program, 'uViewMatrix');
         this.modelViewLocation              = <WebGLUniformLocation>this.gl.getUniformLocation(this.program, 'uModelViewMatrix');
@@ -44,14 +45,18 @@ export class TerrainShader extends Shader {
 
         for(const asset of assets) {
             const positionBuffer    = this.dataBuffers[asset.positionsIndex];
+            const texelsBuffer      = this.dataBuffers[asset.texelsIndex];
             const indecesBuffer     = this.dataBuffers[asset.facesIndex];
-            const heightmapIndex    = this.textureContainer[asset.heightmapIndex];
             const texture           = this.textureContainer[asset.textureIndex];
             const modelViewMatrix   = asset.getModelViewMatrix();
 
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
             this.gl.enableVertexAttribArray(this.vertexPositionLocation);
             this.gl.vertexAttribPointer(this.vertexPositionLocation, components, type, normalize, stride, offset);
+
+            this.gl.bindBuffer(this.gl.ARRAY_BUFFER, texelsBuffer);
+            this.gl.enableVertexAttribArray(this.texelCoordLocation);
+            this.gl.vertexAttribPointer(this.texelCoordLocation, components, type, normalize, stride, offset);
 
             this.gl.uniformMatrix4fv(this.projectionLocation, false, projectionMatrix);
             this.gl.uniformMatrix4fv(this.viewLocation, false, viewMatrix);
@@ -72,6 +77,7 @@ export class TerrainShader extends Shader {
     }
 
     private vertexPositionLocation: number;
+    private texelCoordLocation: number;
     private projectionLocation: WebGLUniformLocation;
     private viewLocation: WebGLUniformLocation;
     private modelViewLocation: WebGLUniformLocation;

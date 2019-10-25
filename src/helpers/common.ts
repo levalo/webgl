@@ -67,29 +67,49 @@ export const parseObj = (objSource: string): Obj => {
 
 interface VertexGrid {
     vertices: Float32Array,
-    indices: Float32Array
+    indices: Uint16Array
 }
 
-export const createGrid = (width: number, height: number, tileSize: number): VertexGrid => {
-    const vertices   = new Array<number>();
-    const indices    = new Array<number>();
-    const tilesInRow = width / tileSize;
+export const createGrid = (width: number, height: number, tileSize: number): Obj => {
+    const vertices      = new Array<number>();
+    const indices       = new Array<number>();
+    const texels        = new Array<number>();
+    const tilesInRow    = width / tileSize;
+    const tilesInColumn = height / tileSize;
+    const faces         = 2 * tilesInRow * tilesInColumn;
 
     for(let i = 0; i <= width; i += tileSize) {
         for(let j = 0; j <= height; j += tileSize) {
-            vertices.push(i,  j);
+            vertices.push(((i * 2) / height) - 1,  ((j * 2) / width) - 1);
         }
     }
 
-    for(let i = 0; i < vertices.length; i++) {
+    for(let i = 0; i <= width; i += tileSize) {
+        for(let j = 0; j <= height; j += tileSize) {
+            texels.push(i / height,  j / width);
+        }
+    }
+
+    for(let i = 0; i < faces / 2; i++) {
+        const startIndex = i + Math.floor(i / tilesInRow);
+
         indices.push(
-            i, i + 1, tilesInRow + 1 + i, 
-            tilesInRow + 1 + i, i + 1, tilesInRow + 2 + i
+            startIndex, startIndex + 1, startIndex + tilesInRow + 1
+        );
+    }
+
+    for(let i = 0; i < faces / 2; i++) {
+        const startIndex = i + Math.floor(i / tilesInRow) + 1;
+
+        indices.push(
+            startIndex, startIndex + tilesInRow + 1, startIndex + tilesInRow
         );
     }
 
     return {
         vertices: new Float32Array(vertices),
-        indices: new Float32Array(indices)
+        texels: new Float32Array(texels),
+        normals: new Float32Array(),
+        indices: new Uint16Array(indices)
     }
 }

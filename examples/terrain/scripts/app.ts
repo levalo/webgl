@@ -9,30 +9,30 @@ const renderer              = new Renderer(canvas);
 const terrainShader         = new TerrainShader(renderer);
 const shaderIndex           = renderer.registrShader(terrainShader);
 const camera                = renderer.getCamera();
-const heightmapTextureIndex = renderer.createTexture(heightmap);
-const terrainGrid           = createGrid(650, 650, 25);
+const terrainGrid           = createGrid(650, 650, 5);
+const terrainHeightmapIndex = renderer.createTexture(heightmap);
 const terrainPositionIndex  = renderer.createArrayBuffer(terrainGrid.vertices);
+const terrainTexelsIndex    = renderer.createArrayBuffer(terrainGrid.texels);
 const terrainFacesIndex     = renderer.createElementsBuffer(terrainGrid.indices);
 
 console.log(terrainGrid);
 
 const terrainAsset = new Geometry(
     [0, 0, 0],      // translate
-    [0, 0, 0],      // rotate
-    [1, 1, 1],      // scale
+    [0, 180, 0],      // rotate
+    [10, 10, 10],      // scale
     [0, 4, 10],     // lightDirection
-    0,
-    heightmapTextureIndex,
+    terrainTexelsIndex,
+    terrainHeightmapIndex,
     0,
     terrainFacesIndex,
     terrainPositionIndex,
-    terrainGrid.indices.length,
-    heightmapTextureIndex
+    terrainGrid.indices.length
 );
 
 camera.setTarget(terrainAsset.position);
-camera.setDistance(-200);
-camera.setHeight(20);
+camera.setDistance(10);
+camera.setHeight(-10);
 camera.update();
 
 

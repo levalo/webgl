@@ -39,7 +39,7 @@ export class Renderer {
         this.gl.clearDepth(1.0);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
-        // this.gl.enable(this.gl.CULL_FACE);
+        this.gl.enable(this.gl.CULL_FACE);
         this.gl.enable(this.gl.DEPTH_TEST);
 
         const aspect                = this.gl.canvas.width / this.gl.canvas.height;
