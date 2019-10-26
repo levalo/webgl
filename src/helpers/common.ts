@@ -65,28 +65,22 @@ export const parseObj = (objSource: string): Obj => {
     };
 }
 
-interface VertexGrid {
-    vertices: Float32Array,
-    indices: Uint16Array
-}
-
-export const createGrid = (width: number, height: number, tileSize: number): Obj => {
+export const createGrid = (dimension: number, tileSize: number): Obj => {
     const vertices      = new Array<number>();
     const indices       = new Array<number>();
     const texels        = new Array<number>();
-    const tilesInRow    = width / tileSize;
-    const tilesInColumn = height / tileSize;
-    const faces         = 2 * tilesInRow * tilesInColumn;
+    const tilesInRow    = dimension / tileSize;
+    const faces         = 2 * tilesInRow * tilesInRow;
 
-    for(let i = 0; i <= width; i += tileSize) {
-        for(let j = 0; j <= height; j += tileSize) {
-            vertices.push(((i * 2) / height) - 1,  ((j * 2) / width) - 1);
+    for(let i = 0; i <= dimension; i += tileSize) {
+        for(let j = 0; j <= dimension; j += tileSize) {
+            vertices.push(((i * 2) / dimension) - 1,  ((j * 2) / dimension) - 1);
         }
     }
 
-    for(let i = 0; i <= width; i += tileSize) {
-        for(let j = 0; j <= height; j += tileSize) {
-            texels.push(i / height,  j / width);
+    for(let i = 0; i <= dimension; i += tileSize) {
+        for(let j = 0; j <= dimension; j += tileSize) {
+            texels.push(i / dimension,  j / dimension);
         }
     }
 

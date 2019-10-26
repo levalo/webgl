@@ -1,5 +1,6 @@
-import { Renderer, createGrid, Geometry, TerrainShader } from '../../../src';
+import { Renderer, createGrid, Geometry, TerrainShader, degreeToRadian } from '../../../src';
 import * as heightmap from '../res/heightmap.png';
+import { vec3, vec4 } from 'gl-matrix';
 
 const canvas    = <HTMLCanvasElement>document.getElementById("canvas");
 canvas.width    = document.documentElement.clientWidth;
@@ -9,18 +10,17 @@ const renderer              = new Renderer(canvas);
 const terrainShader         = new TerrainShader(renderer);
 const shaderIndex           = renderer.registrShader(terrainShader);
 const camera                = renderer.getCamera();
-const terrainGrid           = createGrid(650, 650, 5);
+const terrainGrid           = createGrid(650, 5);
 const terrainHeightmapIndex = renderer.createTexture(heightmap);
 const terrainPositionIndex  = renderer.createArrayBuffer(terrainGrid.vertices);
 const terrainTexelsIndex    = renderer.createArrayBuffer(terrainGrid.texels);
 const terrainFacesIndex     = renderer.createElementsBuffer(terrainGrid.indices);
-
-console.log(terrainGrid);
+const player                = [ 0, 8, 0 ];
 
 const terrainAsset = new Geometry(
     [0, 0, 0],      // translate
-    [0, 180, 0],      // rotate
-    [10, 10, 10],      // scale
+    [0, 180, 0],    // rotate
+    [20, 20, 20],   // scale
     [0, 4, 10],     // lightDirection
     terrainTexelsIndex,
     terrainHeightmapIndex,
@@ -30,16 +30,16 @@ const terrainAsset = new Geometry(
     terrainGrid.indices.length
 );
 
-camera.setTarget(terrainAsset.position);
-camera.setDistance(10);
-camera.setHeight(-10);
+camera.setTarget(player);
+camera.setDistance(1);
+camera.setHeight(0);
 camera.update();
 
 
 renderer.addAsset(shaderIndex, terrainAsset);
 renderer.setBackgroundColor(new Float32Array([0.9, 0.9, 0.9]));
 
-let cameraAngleX = 0;
+let cameraAngleX = 45;
 let cameraAngleY = 0;
 camera.setAngleX(cameraAngleX);
 camera.setAngleY(cameraAngleY);
@@ -71,6 +71,16 @@ document.onmouseup = (event: MouseEvent): void => {
 
 document.onwheel = (event: WheelEvent): void => {
     camera.addDistance(event.deltaY);
+
+    camera.update();
+}
+
+document.onkeydown = (event: KeyboardEvent): void => {
+    if (event.keyCode == 38) {
+        player[0] += Math.sin(degreeToRadian(cameraAngleY)) * 0.2;
+        player[2] += Math.cos(degreeToRadian(cameraAngleY)) * 0.2;
+        player[1] += -1 * Math.sin(degreeToRadian(cameraAngleX)) * 0.2;
+    }
 
     camera.update();
 }
