@@ -1,6 +1,5 @@
 import { Renderer, createGrid, Geometry, TerrainShader, degreeToRadian } from '../../../src';
 import * as heightmap from '../res/heightmap.png';
-import { vec3, vec4 } from 'gl-matrix';
 
 const canvas    = <HTMLCanvasElement>document.getElementById("canvas");
 canvas.width    = document.documentElement.clientWidth;
@@ -10,17 +9,17 @@ const renderer              = new Renderer(canvas);
 const terrainShader         = new TerrainShader(renderer);
 const shaderIndex           = renderer.registrShader(terrainShader);
 const camera                = renderer.getCamera();
-const terrainGrid           = createGrid(650, 5);
+const terrainGrid           = createGrid(4);
 const terrainHeightmapIndex = renderer.createTexture(heightmap);
 const terrainPositionIndex  = renderer.createArrayBuffer(terrainGrid.vertices);
 const terrainTexelsIndex    = renderer.createArrayBuffer(terrainGrid.texels);
 const terrainFacesIndex     = renderer.createElementsBuffer(terrainGrid.indices);
-const player                = [ 0, 8, 0 ];
+const player                = [ 0, 5, -5 ];
 
 const terrainAsset = new Geometry(
     [0, 0, 0],      // translate
     [0, 180, 0],    // rotate
-    [20, 20, 20],   // scale
+    [5, 5, 5],   // scale
     [0, 4, 10],     // lightDirection
     terrainTexelsIndex,
     terrainHeightmapIndex,

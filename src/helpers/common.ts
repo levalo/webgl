@@ -65,40 +65,46 @@ export const parseObj = (objSource: string): Obj => {
     };
 }
 
-export const createGrid = (dimension: number, tileSize: number): Obj => {
-    const vertices      = new Array<number>();
-    const indices       = new Array<number>();
-    const texels        = new Array<number>();
-    const tilesInRow    = dimension / tileSize;
-    const faces         = 2 * tilesInRow * tilesInRow;
+export const createGrid = (dimension: number): Obj => {
+    const vertices = new Array<number>();
+    const indices  = new Array<number>();
+    const texels   = new Array<number>();
+    const ringSize = dimension / 4;
+    const faces    = 2 * dimension * dimension;
 
-    for(let i = 0; i <= dimension; i += tileSize) {
-        for(let j = 0; j <= dimension; j += tileSize) {
-            vertices.push(((i * 2) / dimension) - 1,  ((j * 2) / dimension) - 1);
+    for(let i = 0; i <= dimension; i++) {
+        for(let j = 0; j <= dimension; j++) {
+            if (i > ringSize && i < dimension - ringSize && j > ringSize && j < dimension - ringSize) continue;
+
+            vertices.push((j * 2) / dimension - 1, (i * 2) / dimension - 1);
+            texels.push(j / dimension, i / dimension);
         }
     }
 
-    for(let i = 0; i <= dimension; i += tileSize) {
-        for(let j = 0; j <= dimension; j += tileSize) {
-            texels.push(i / dimension,  j / dimension);
+    for(let i = 0, l = 0; i < faces / 2; i++) {
+        const col           = i % dimension;
+        const row           = Math.floor(i / dimension);
+        const startIndex    = i + row;
+        const bottomIndex   = (row + 1) * (dimension + 1) + col;
+
+        if (row >= ringSize && row < dimension - ringSize && col >= ringSize && col < dimension - ringSize) {
+            console.log(i, row, col, l, startIndex, bottomIndex, 'miss');
+            l += 1;
+            continue;
         }
-    }
-
-    for(let i = 0; i < faces / 2; i++) {
-        const startIndex = i + Math.floor(i / tilesInRow);
-
-        indices.push(
-            startIndex, startIndex + 1, startIndex + tilesInRow + 1
-        );
-    }
-
-    for(let i = 0; i < faces / 2; i++) {
-        const startIndex = i + Math.floor(i / tilesInRow) + 1;
+        else {
+            console.log(i, row, col, l, startIndex, bottomIndex, 'ok');
+        }
 
         indices.push(
-            startIndex, startIndex + tilesInRow + 1, startIndex + tilesInRow
+            startIndex, bottomIndex - l, startIndex + 1,
+            startIndex + 1, bottomIndex - l, bottomIndex - l + 1
         );
+
+        if (i == 7) break;
     }
+
+    console.log(dimension, vertices, texels, indices);
 
     return {
         vertices: new Float32Array(vertices),
