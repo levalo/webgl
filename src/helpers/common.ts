@@ -69,42 +69,27 @@ export const createGrid = (dimension: number): Obj => {
     const vertices = new Array<number>();
     const indices  = new Array<number>();
     const texels   = new Array<number>();
-    const ringSize = dimension / 4;
     const faces    = 2 * dimension * dimension;
 
     for(let i = 0; i <= dimension; i++) {
         for(let j = 0; j <= dimension; j++) {
-            if (i > ringSize && i < dimension - ringSize && j > ringSize && j < dimension - ringSize) continue;
 
             vertices.push((j * 2) / dimension - 1, (i * 2) / dimension - 1);
             texels.push(j / dimension, i / dimension);
         }
     }
 
-    for(let i = 0, l = 0; i < faces / 2; i++) {
+    for(let i = 0; i < faces / 2; i++) {
         const col           = i % dimension;
         const row           = Math.floor(i / dimension);
         const startIndex    = i + row;
         const bottomIndex   = (row + 1) * (dimension + 1) + col;
 
-        if (row >= ringSize && row < dimension - ringSize && col >= ringSize && col < dimension - ringSize) {
-            console.log(i, row, col, l, startIndex, bottomIndex, 'miss');
-            l += 1;
-            continue;
-        }
-        else {
-            console.log(i, row, col, l, startIndex, bottomIndex, 'ok');
-        }
-
         indices.push(
-            startIndex, bottomIndex - l, startIndex + 1,
-            startIndex + 1, bottomIndex - l, bottomIndex - l + 1
+            startIndex, bottomIndex, startIndex + 1,
+            startIndex + 1, bottomIndex, bottomIndex + 1
         );
-
-        if (i == 7) break;
     }
-
-    console.log(dimension, vertices, texels, indices);
 
     return {
         vertices: new Float32Array(vertices),
